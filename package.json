@@ -1,0 +1,24 @@
+{
+	"name": "@bazo/fetch-client",
+	"version": "0.0.1",
+	"description": "Fetch http client",
+	"main": "index.js",
+	"repository": "git@github.com:bazo/fetch-client.git",
+	"author": "Martin Bazik <martin@bazo.sk>",
+	"license": "MIT",
+	"private": false,
+	"dependencies": {
+		"@bazo/event-emitter": "^0.0.5"
+	},
+	"devDependencies": {
+		"typescript": "^3.8.3"
+	},
+	"scripts": {
+		"build": "tsc",
+		"prepublish": "yarn build",
+		"pub": "yarn publish --access public"
+	},
+	"files": [
+		"lib/**/*"
+	]
+}
