@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@bazo/event-emitter@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@bazo/event-emitter/-/event-emitter-0.0.5.tgz#e473f46a56071af91a02d71953d707cba0753fda"
-  integrity sha512-2Yk2v90/P/A0jn+C3/IHeW4mHfx2ac2vgP80SfWTfF4YDIuY3CE5fQzeROIOizUpWdJRNFYJSTngieh6DuDZDQ==
+"@bazo/event-emitter@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@bazo/event-emitter/-/event-emitter-0.0.6.tgz#e608d7d3df437f7667d63f7ca10ec11771b87db9"
+  integrity sha512-GeHUE2Ky55KFLgtu5bdT5msD87DkOyHAoAUyJcrbDqtVd/sQW58DbqFlb2HJzM1jqbLmxaBYPYfOQl0gbseeLA==
 
 typescript@^3.8.3:
   version "3.8.3"

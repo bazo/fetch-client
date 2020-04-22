@@ -18,15 +18,21 @@ export enum HttpMethod {
 	HEAD = "HEAD",
 	TRACE = "TRACE",
 	OPTIONS = "OPTIONS",
-	CONNECT = "CONNECT"
+	CONNECT = "CONNECT",
 }
 
 export enum HttpClientEvent {
-	REQUEST_CREATE = "REQUEST_CREATE"
+	REQUEST_CREATE = "REQUEST_CREATE",
 }
 
+interface StrictRequestBody extends Object {
+	[key: string]: any;
+}
+
+export type RequestBody = StrictRequestBody | undefined;
+
 const defaultConfig: Config = {
-	withEvents: true
+	withEvents: true,
 };
 
 export class HttpClient {
@@ -85,7 +91,7 @@ export class HttpClient {
 				redirect: "follow",
 				method,
 				body: config?.body,
-				headers: {}
+				headers: {},
 			};
 		}
 
@@ -135,16 +141,21 @@ export class HttpClient {
 		config = {
 			...defaultConfig,
 			params,
-			...config
+			...config,
 		} as Config;
 		const request = await this.createRequest(HttpMethod.GET, url, config, init);
 		return this.createResponse<T>(request, config);
 	}
 
-	public async post<T>(url: string, body = undefined, config: Config = {}, init?: RequestInit): Promise<T> {
+	public async post<T>(
+		url: string,
+		body: RequestBody = undefined,
+		config: Config = {},
+		init?: RequestInit
+	): Promise<T> {
 		config = {
 			...defaultConfig,
-			...config
+			...config,
 		} as Config;
 
 		if (!config.hasOwnProperty("body") && body) {
@@ -155,10 +166,15 @@ export class HttpClient {
 		return this.createResponse<T>(request, config);
 	}
 
-	public async put<T>(url: string, body = undefined, config: Config = {}, init?: RequestInit): Promise<T> {
+	public async put<T>(
+		url: string,
+		body: RequestBody = undefined,
+		config: Config = {},
+		init?: RequestInit
+	): Promise<T> {
 		config = {
 			...defaultConfig,
-			...config
+			...config,
 		} as Config;
 
 		if (!config.hasOwnProperty("body") && body) {
@@ -169,10 +185,15 @@ export class HttpClient {
 		return this.createResponse<T>(request, config);
 	}
 
-	public async patch<T>(url: string, body = undefined, config: Config = {}, init?: RequestInit): Promise<T> {
+	public async patch<T>(
+		url: string,
+		body: RequestBody = undefined,
+		config: Config = {},
+		init?: RequestInit
+	): Promise<T> {
 		config = {
 			...defaultConfig,
-			...config
+			...config,
 		} as Config;
 
 		if (!config.hasOwnProperty("body") && body) {
@@ -190,7 +211,7 @@ export class HttpClient {
 	): Promise<T> {
 		const config = {
 			...defaultConfig,
-			params
+			params,
 		} as Config;
 
 		const request = await this.createRequest(HttpMethod.DELETE, url, config, init);
