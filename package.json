@@ -1,6 +1,6 @@
 {
 	"name": "@bazo/fetch-client",
-	"version": "0.0.4",
+	"version": "1.0.0",
 	"description": "Fetch http client",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
