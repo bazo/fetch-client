@@ -52,6 +52,10 @@ export class HttpClient {
 		return "RESPONSE_CREATE";
 	}
 
+	static get RESPONSE_ERROR() {
+		return "RESPONSE_ERROR";
+	}
+
 	constructor(baseUrl: string = "", defaultHeaders: Record<string, string | number> = {}) {
 		this.baseUrl = baseUrl;
 		this.defaultHeaders = defaultHeaders;
@@ -95,6 +99,8 @@ export class HttpClient {
 			};
 		}
 
+		init.headers = { ...this.defaultHeaders, ...init.headers } as RequestInit["headers"];
+
 		if (config.abortToken) {
 			init.signal = config.abortToken.getSignal();
 		}
@@ -112,9 +118,20 @@ export class HttpClient {
 		return request;
 	}
 
-	private static checkResponse(res: Response) {
+	private async checkResponse(res: Response, config: Config) {
 		if (!res.ok) {
-			throw new HttpError(res);
+			let shouldThrow = true;
+
+			if (config.withEvents) {
+				const throwContext = {
+					throw: true,
+				};
+				await this.em.dispatch(HttpClient.RESPONSE_ERROR, [res, throwContext]);
+				shouldThrow = throwContext.throw;
+			}
+			if (shouldThrow) {
+				throw new HttpError(res);
+			}
 		}
 	}
 
@@ -123,7 +140,7 @@ export class HttpClient {
 		if (config.withEvents) {
 			await this.em.dispatch(HttpClient.RESPONSE_FETCHED, request);
 		}
-		HttpClient.checkResponse(response);
+		await this.checkResponse(response, config);
 
 		if (config.withEvents) {
 			await this.em.dispatch(HttpClient.RESPONSE_CREATE, request);
