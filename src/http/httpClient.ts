@@ -23,6 +23,9 @@ export enum HttpMethod {
 
 export enum HttpClientEvent {
 	REQUEST_CREATE = "REQUEST_CREATE",
+	RESPONSE_FETCHED = "RESPONSE_FETCHED",
+	RESPONSE_CREATE = "RESPONSE_CREATE",
+	RESPONSE_ERROR = "RESPONSE_ERROR",
 }
 
 interface StrictRequestBody extends Object {
@@ -40,26 +43,14 @@ export class HttpClient {
 	private em: EventEmitter;
 	private defaultHeaders: Record<string, string | number>;
 
-	static get REQUEST_CREATE() {
-		return "REQUEST_CREATE";
-	}
-
-	static get RESPONSE_FETCHED() {
-		return "RESPONSE_FETCHED";
-	}
-
-	static get RESPONSE_CREATE() {
-		return "RESPONSE_CREATE";
-	}
-
-	static get RESPONSE_ERROR() {
-		return "RESPONSE_ERROR";
-	}
-
 	constructor(baseUrl: string = "", defaultHeaders: Record<string, string | number> = {}) {
 		this.baseUrl = baseUrl;
 		this.defaultHeaders = defaultHeaders;
 		this.em = new EventEmitter();
+	}
+
+	public setDefaultHeader(header: string, value: string | number): void {
+		this.defaultHeaders[header] = value;
 	}
 
 	private createURL(url: string, config?: Config): string {
@@ -112,7 +103,7 @@ export class HttpClient {
 		}
 
 		if (config.withEvents) {
-			await this.em.dispatch(HttpClient.REQUEST_CREATE, request);
+			await this.em.dispatch(HttpClientEvent.REQUEST_CREATE, request);
 		}
 
 		return request;
@@ -126,7 +117,7 @@ export class HttpClient {
 				const throwContext = {
 					throw: true,
 				};
-				await this.em.dispatch(HttpClient.RESPONSE_ERROR, [res, throwContext]);
+				await this.em.dispatch(HttpClientEvent.RESPONSE_ERROR, [res, throwContext]);
 				shouldThrow = throwContext.throw;
 			}
 			if (shouldThrow) {
@@ -138,12 +129,12 @@ export class HttpClient {
 	private async createResponse<T>(request: Request, config: Config): Promise<T> {
 		const response = await fetch(request);
 		if (config.withEvents) {
-			await this.em.dispatch(HttpClient.RESPONSE_FETCHED, request);
+			await this.em.dispatch(HttpClientEvent.RESPONSE_FETCHED, request);
 		}
 		await this.checkResponse(response, config);
 
 		if (config.withEvents) {
-			await this.em.dispatch(HttpClient.RESPONSE_CREATE, request);
+			await this.em.dispatch(HttpClientEvent.RESPONSE_CREATE, request);
 		}
 
 		return response.json();
@@ -235,7 +226,7 @@ export class HttpClient {
 		return this.createResponse<T>(request, config);
 	}
 
-	public on(event: string, callback: EventCallback) {
+	public on(event: HttpClientEvent, callback: EventCallback) {
 		this.em.on(event, callback);
 	}
 }

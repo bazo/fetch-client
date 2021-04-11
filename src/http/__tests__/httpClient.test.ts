@@ -1,5 +1,5 @@
 import "whatwg-fetch";
-import { HttpClient, HttpMethod } from "../httpClient";
+import { HttpClient, HttpClientEvent, HttpMethod } from "../httpClient";
 import { HttpError } from "../httpError";
 
 const defaultHeaders = {
@@ -48,7 +48,7 @@ describe("HttpClient", () => {
 		expect(res.headers.map["x-test-header"]).toEqual(defaultHeaders["X-TEST-HEADER"]);
 		expect(res.headers.map["test"]).toEqual("yes");
 
-		expect(res.url.toString()).toEqual("http://localhost/test/get?a=a&b=b");
+		expect(res.url?.toString()).toEqual("http://localhost/test/get?a=a&b=b");
 		expect(res.method).toEqual(HttpMethod.GET);
 	});
 
@@ -94,7 +94,7 @@ describe("HttpClient", () => {
 });
 
 describe("HttpClient with events", () => {
-	const events = [HttpClient.REQUEST_CREATE, HttpClient.RESPONSE_FETCHED, HttpClient.RESPONSE_CREATE];
+	const events = [HttpClientEvent.REQUEST_CREATE, HttpClientEvent.RESPONSE_FETCHED, HttpClientEvent.RESPONSE_CREATE];
 
 	test.each(events)(`fires %s`, async (event) => {
 		const mockEventHandler = jest.fn();
@@ -106,10 +106,10 @@ describe("HttpClient with events", () => {
 		expect(mockEventHandler).toBeCalled();
 	});
 
-	test(`fires ${HttpClient.RESPONSE_ERROR}`, async () => {
+	test(`fires ${HttpClientEvent.RESPONSE_ERROR}`, async () => {
 		const mockEventHandler = jest.fn();
 		const http = createClient();
-		http.on(HttpClient.RESPONSE_ERROR, mockEventHandler);
+		http.on(HttpClientEvent.RESPONSE_ERROR, mockEventHandler);
 
 		//  expect(async () => {
 		try {
@@ -140,12 +140,12 @@ describe("HttpClient with events", () => {
 		expect(mockEventHandler).toBeCalledWith(expected);
 	});
 
-	test(`fires ${HttpClient.RESPONSE_ERROR} but doesn't throw`, async () => {
+	test(`fires ${HttpClientEvent.RESPONSE_ERROR} but doesn't throw`, async () => {
 		const eventHandler = ([res, throwContext]: [res: any, throwContext: { throw: boolean }]) => {
 			throwContext.throw = false;
 		};
 		const http = createClient();
-		http.on(HttpClient.RESPONSE_ERROR, eventHandler);
+		http.on(HttpClientEvent.RESPONSE_ERROR, eventHandler);
 
 		await http.get<TestRequest>("/error");
 	});
