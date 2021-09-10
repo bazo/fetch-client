@@ -62,7 +62,16 @@ describe("HttpClient", () => {
 		const body = {
 			test: "yes",
 		};
-		const res = await http.post<TestRequest>("/post", body);
+		const res = await http.post<TestRequest>(
+			"/post",
+			body,
+			{},
+			{
+				headers: {
+					test: "yes",
+				},
+			}
+		);
 
 		expect(res.headers["x-test-header"]).toEqual(defaultHeaders["X-TEST-HEADER"]);
 		expect(res.headers["content-type"]).toEqual("application/json;charset=utf-8");
@@ -139,7 +148,7 @@ describe("HttpClient with events", () => {
 		};
 		const expected: [ErrorTestResponse, typeof throwContext] = [res, throwContext];
 
-		expect(mockEventHandler).toHaveBeenCalled()
+		expect(mockEventHandler).toHaveBeenCalled();
 	});
 
 	test(`fires ${HttpClientEvent.RESPONSE_ERROR} but doesn't throw`, async () => {

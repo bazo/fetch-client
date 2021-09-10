@@ -80,14 +80,18 @@ export class HttpClient {
 	}
 
 	private async createRequest(method: string, url: string, config: Config, init?: RequestInit): Promise<Request> {
+		const defaultInit = {
+			mode: "cors" as RequestMode,
+			redirect: "follow" as RequestRedirect,
+			method,
+			body: config?.body,
+			headers: {},
+		};
+
 		if (!init) {
-			init = {
-				mode: "cors",
-				redirect: "follow",
-				method,
-				body: config?.body,
-				headers: {},
-			};
+			init = defaultInit;
+		} else {
+			init = { ...defaultInit, ...init };
 		}
 
 		init.headers = { ...this.defaultHeaders, ...init.headers } as RequestInit["headers"];
@@ -128,7 +132,7 @@ export class HttpClient {
 
 	private async createResponse<T>(request: Request, config: Config): Promise<T> {
 		const response = await fetch(request);
-		
+
 		if (config.withEvents) {
 			await this.em.dispatch(HttpClientEvent.RESPONSE_FETCHED, request);
 		}
