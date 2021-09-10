@@ -128,6 +128,7 @@ export class HttpClient {
 
 	private async createResponse<T>(request: Request, config: Config): Promise<T> {
 		const response = await fetch(request);
+		
 		if (config.withEvents) {
 			await this.em.dispatch(HttpClientEvent.RESPONSE_FETCHED, request);
 		}
@@ -152,6 +153,7 @@ export class HttpClient {
 			...config,
 		} as Config;
 		const request = await this.createRequest(HttpMethod.GET, url, config, init);
+
 		return this.createResponse<T>(request, config);
 	}
 
